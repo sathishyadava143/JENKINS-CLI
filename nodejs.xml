@@ -1,0 +1,74 @@
+<?xml version='1.1' encoding='UTF-8'?>
+<flow-definition plugin="workflow-job@1506.v77f78a_b_8cc5e">
+  <actions>
+    <org.jenkinsci.plugins.pipeline.modeldefinition.actions.DeclarativeJobAction plugin="pipeline-model-definition@2.2247.va_423189a_7dff"/>
+    <org.jenkinsci.plugins.pipeline.modeldefinition.actions.DeclarativeJobPropertyTrackerAction plugin="pipeline-model-definition@2.2247.va_423189a_7dff">
+      <jobProperties/>
+      <triggers/>
+      <parameters>
+        <string>branch_name</string>
+      </parameters>
+      <options/>
+    </org.jenkinsci.plugins.pipeline.modeldefinition.actions.DeclarativeJobPropertyTrackerAction>
+  </actions>
+  <description></description>
+  <keepDependencies>false</keepDependencies>
+  <properties>
+    <hudson.model.ParametersDefinitionProperty>
+      <parameterDefinitions>
+        <hudson.model.ChoiceParameterDefinition>
+          <name>branch_name</name>
+          <choices class="java.util.Arrays$ArrayList">
+            <a class="string-array">
+              <string>master</string>
+              <string>dev</string>
+            </a>
+          </choices>
+        </hudson.model.ChoiceParameterDefinition>
+      </parameterDefinitions>
+    </hudson.model.ParametersDefinitionProperty>
+  </properties>
+  <definition class="org.jenkinsci.plugins.workflow.cps.CpsFlowDefinition" plugin="workflow-cps@4046.v90b_1b_9edec67">
+    <script>pipeline{
+    agent any
+    tools{
+        nodejs &apos;node&apos;
+    }
+    parameters {
+        choice choices: [&apos;master&apos;, &apos;dev&apos;], name: &apos;branch_name&apos;
+    }
+    stages{
+        stage(&apos;checkout&apos;){
+            steps{
+                git branch: &quot;${params.branch_name}&quot;, url: &apos;https://github.com/sathishyadava143/nodejs-app-mss.git&apos;
+            }
+        }
+        stage(&apos;build&apos;){
+            steps{
+                sh &quot;npm install&quot;
+                
+            }
+        }
+        stage(&apos;quality_check&apos;){
+            steps{
+                sh &quot;npm run sonar sonar-project.js&quot;
+            }
+        }
+        stage(&apos;push to artifact&apos;){
+            steps{
+                sh &quot;npm publish&quot;
+            }
+        }
+        stage(&apos;publish&apos;){
+            steps{
+                sh &quot;npm run &amp; disown&quot;
+            }
+            
+        }
+    }
+}</script>
+    <sandbox>true</sandbox>
+  </definition>
+  <triggers/>
+  <disabled>false</disabled>
+</flow-definition>
